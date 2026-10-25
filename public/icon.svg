@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <rect width="512" height="512" rx="128" fill="#040b08"/>
+  <circle cx="256" cy="256" r="210" fill="url(#bg-glow)" opacity="0.6"/>
+  <circle cx="256" cy="256" r="190" stroke="url(#border-glow)" stroke-width="8" opacity="0.8"/>
+  
+  <g transform="translate(64, 64) scale(8)">
+    <path
+      d="M12 36C12 36 12 24 24 12C36 24 36 36 24 36C18 36 14 36 12 36Z"
+      fill="url(#leaf-grad-1)"
+    />
+    <path
+      d="M18 32C22 30 26 26 28 20C26 26 22 28 18 32Z"
+      fill="#ffffff"
+      opacity="0.85"
+    />
+    <path
+      d="M24 12C28 16 32 21 33 27C31 23 28 19 24 12Z"
+      fill="url(#leaf-grad-2)"
+    />
+  </g>
+  
+  <defs>
+    <radialGradient id="bg-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#10b981" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#040b08" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="border-glow" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#34d399"/>
+      <stop offset="0.5" stop-color="#10b981"/>
+      <stop offset="1" stop-color="#047857"/>
+    </linearGradient>
+    <linearGradient id="leaf-grad-1" x1="12" y1="12" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#34d399"/>
+      <stop offset="0.6" stop-color="#10b981"/>
+      <stop offset="1" stop-color="#047857"/>
+    </linearGradient>
+    <linearGradient id="leaf-grad-2" x1="24" y1="12" x2="33" y2="27" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#a7f3d0"/>
+      <stop offset="1" stop-color="#34d399"/>
+    </linearGradient>
+  </defs>
+</svg>

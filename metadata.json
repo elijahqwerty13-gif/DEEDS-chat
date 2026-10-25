@@ -1,0 +1,6 @@
+{
+  "name": "DEEDS CHAT — Advanced Messaging App",
+  "description": "Premium dark-glassmorphism messaging app with emerald accents, real-time messaging, email verification, voice notes, rich media, and Supabase cloud sync.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

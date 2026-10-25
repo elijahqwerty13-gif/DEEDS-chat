@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: #050b0a;
+    color: #e2e8f0;
+    overflow-x: hidden;
+    user-select: text;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* Custom sleek scrollbar for chats and lists */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(16, 185, 129, 0.2);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(16, 185, 129, 0.4);
+}
+
+/* Glassmorphism helpers */
+.glass-panel {
+  background: rgba(9, 20, 18, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(16, 185, 129, 0.12);
+}
+
+.glass-panel-subtle {
+  background: rgba(13, 27, 24, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glass-dropdown {
+  background: rgba(7, 16, 14, 0.95);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.8), 0 0 25px rgba(16, 185, 129, 0.08);
+}
+
+/* Emerald glow utilities */
+.emerald-glow {
+  box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.35);
+}
+
+.emerald-glow-sm {
+  box-shadow: 0 0 12px -2px rgba(16, 185, 129, 0.3);
+}
+
+/* Wallpapers */
+.wallpaper-emerald-mesh {
+  background-color: #040908;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.12) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(5, 150, 105, 0.1) 0px, transparent 50%),
+    radial-gradient(at 50% 50%, rgba(4, 120, 87, 0.05) 0px, transparent 50%),
+    radial-gradient(rgba(16, 185, 129, 0.04) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 24px 24px;
+}
+
+.wallpaper-obsidian {
+  background-color: #030605;
+  background-image: 
+    radial-gradient(at 80% 20%, rgba(15, 23, 42, 0.4) 0px, transparent 60%),
+    radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 20px 20px;
+}
+
+.wallpaper-cyber-grid {
+  background-color: #040b08;
+  background-image: 
+    linear-gradient(to right, rgba(16, 185, 129, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(16, 185, 129, 0.05) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.wallpaper-midnight {
+  background-color: #02070e;
+  background-image: 
+    radial-gradient(at 10% 90%, rgba(14, 116, 144, 0.15) 0px, transparent 50%),
+    radial-gradient(at 90% 10%, rgba(16, 185, 129, 0.12) 0px, transparent 50%);
+  background-size: 100% 100%;
+}
