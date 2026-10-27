@@ -47,6 +47,8 @@ import {
   Maximize2,
   Minimize2,
   Lock,
+  MoreVertical,
+  Check,
 } from 'lucide-react';
 
 export default function App() {
@@ -82,6 +84,9 @@ export default function App() {
       window.location.search.includes('app=true')
     );
   });
+
+  // Header 3-dot options menu
+  const [headerMenuOpen, setHeaderMenuOpen] = useState(false);
 
   // Modals & Panels
   const [authModalState, setAuthModalState] = useState<{
@@ -488,9 +493,9 @@ export default function App() {
           NATIVE CLIENT WINDOW TITLEBAR (Mac / Windows Desktop App Chrome)
       ========================================================================= */}
       <header className="h-11 bg-[#040c09] border-b border-emerald-500/20 px-3 flex items-center justify-between z-30 shrink-0 select-none shadow-sm">
-        {/* Left: Window Controls (macOS Traffic Lights) */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 mr-2">
+        {/* Left: Window Controls + Logo and App Name attached near it */}
+        <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-1.5 mr-1">
             <button
               onClick={() => {
                 sounds.playTap();
@@ -498,7 +503,7 @@ export default function App() {
                   window.close();
                 }
               }}
-              className="w-3 h-3 rounded-full bg-rose-500/80 hover:bg-rose-500 border border-rose-600/50 transition-colors"
+              className="w-3 h-3 rounded-full bg-rose-500/80 hover:bg-rose-500 border border-rose-600/50 transition-colors cursor-pointer"
               title="Close window"
             />
             <button
@@ -506,109 +511,192 @@ export default function App() {
                 sounds.playTap();
                 setIsWindowMinimized(!isWindowMinimized);
               }}
-              className="w-3 h-3 rounded-full bg-amber-500/80 hover:bg-amber-500 border border-amber-600/50 transition-colors"
+              className="w-3 h-3 rounded-full bg-amber-500/80 hover:bg-amber-500 border border-amber-600/50 transition-colors cursor-pointer"
               title="Minimize window"
             />
             <button
               onClick={toggleFullscreen}
-              className="w-3 h-3 rounded-full bg-emerald-500/80 hover:bg-emerald-500 border border-emerald-600/50 transition-colors"
+              className="w-3 h-3 rounded-full bg-emerald-500/80 hover:bg-emerald-500 border border-emerald-600/50 transition-colors cursor-pointer"
               title="Toggle fullscreen"
             />
           </div>
 
-          <DeedsLogo size="sm" showText={true} />
-          
-          <div className="hidden lg:flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-[10px] text-emerald-300 font-mono">
-            <Lock className="w-3 h-3 text-emerald-400" />
-            <span>Encrypted Client v2.4</span>
-          </div>
+          <DeedsLogo size="sm" showText={true} layout="horizontal" />
         </div>
 
-        {/* Center: Client Mode Switcher (Desktop Client vs Phone App) */}
-        <div className="flex items-center p-0.5 rounded-full bg-slate-950/80 border border-emerald-500/25">
+        {/* Right: 3-dot Menu containing all actions (Modes, Install, Showcase, Database, Fullscreen) */}
+        <div className="relative">
           <button
             onClick={() => {
               sounds.playTap();
-              setClientMode('desktop');
+              setHeaderMenuOpen(!headerMenuOpen);
             }}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all ${
-              clientMode === 'desktop'
-                ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/30'
-                : 'text-slate-400 hover:text-white'
+            className={`p-1.5 rounded-lg transition-all cursor-pointer ${
+              headerMenuOpen
+                ? 'text-emerald-400 bg-emerald-500/15 ring-1 ring-emerald-500/30'
+                : 'text-slate-400 hover:text-emerald-300 hover:bg-emerald-500/10'
             }`}
+            title="Options & Menu"
+            aria-label="Options & Menu"
+            aria-expanded={headerMenuOpen}
           >
-            <Monitor className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Desktop App</span>
+            <MoreVertical className="w-5 h-5" />
           </button>
 
-          <button
-            onClick={() => {
-              sounds.playTap();
-              setClientMode('phone');
-            }}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all ${
-              clientMode === 'phone'
-                ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/30'
-                : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            <Smartphone className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Phone App</span>
-          </button>
-        </div>
+          {/* Dropdown Menu */}
+          {headerMenuOpen && (
+            <>
+              {/* Invisible backdrop to dismiss menu on click outside */}
+              <div
+                className="fixed inset-0 z-40"
+                onClick={() => setHeaderMenuOpen(false)}
+              />
 
-        {/* Right: Install App CTA & Utilities */}
-        <div className="flex items-center gap-2">
-          {/* Native Install App Pill - Switches to subtle active badge once downloaded */}
-          {!hasDownloadedApp && !isStandalone ? (
-            <button
-              onClick={handleInstallClick}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold shadow-md shadow-emerald-500/25 transition-transform active:scale-95 cursor-pointer"
-              title="Install DEEDS CHAT on Android or Windows PC"
-            >
-              <Download className="w-3.5 h-3.5 stroke-[2.5]" />
-              <span className="hidden sm:inline">Install DEEDS CHAT</span>
-              <span className="sm:hidden">Install</span>
-            </button>
-          ) : (
-            <button
-              onClick={() => {
-                sounds.playTap();
-                setInstallModalOpen(true);
-              }}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-emerald-400 hover:text-emerald-300 text-xs font-medium transition-colors"
-              title="DEEDS CHAT App Active - Click for installation settings"
-            >
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="hidden sm:inline">DEEDS CHAT Active</span>
-              <span className="sm:hidden">Installed</span>
-            </button>
+              <div className="absolute right-0 top-10 w-72 rounded-2xl bg-[#06120d]/95 backdrop-blur-xl border border-emerald-500/30 p-2 shadow-2xl z-50 text-xs animate-in fade-in zoom-in-95 duration-150 space-y-2">
+                {/* Client Mode Switcher */}
+                <div className="px-2 pt-1 pb-1">
+                  <p className="text-[10px] font-semibold tracking-wider uppercase text-slate-400 mb-1.5">
+                    Client View Mode
+                  </p>
+                  <div className="grid grid-cols-2 gap-1.5 p-1 rounded-xl bg-slate-950/80 border border-emerald-500/20">
+                    <button
+                      onClick={() => {
+                        sounds.playTap();
+                        setClientMode('desktop');
+                        setHeaderMenuOpen(false);
+                      }}
+                      className={`flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg font-medium transition-all cursor-pointer ${
+                        clientMode === 'desktop'
+                          ? 'bg-emerald-500 text-slate-950 shadow-md font-semibold'
+                          : 'text-slate-400 hover:text-white hover:bg-white/5'
+                      }`}
+                    >
+                      <Monitor className="w-3.5 h-3.5" />
+                      <span>Desktop</span>
+                      {clientMode === 'desktop' && <Check className="w-3 h-3 stroke-[3]" />}
+                    </button>
+                    <button
+                      onClick={() => {
+                        sounds.playTap();
+                        setClientMode('phone');
+                        setHeaderMenuOpen(false);
+                      }}
+                      className={`flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg font-medium transition-all cursor-pointer ${
+                        clientMode === 'phone'
+                          ? 'bg-emerald-500 text-slate-950 shadow-md font-semibold'
+                          : 'text-slate-400 hover:text-white hover:bg-white/5'
+                      }`}
+                    >
+                      <Smartphone className="w-3.5 h-3.5" />
+                      <span>Phone</span>
+                      {clientMode === 'phone' && <Check className="w-3 h-3 stroke-[3]" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="h-px bg-emerald-500/20" />
+
+                {/* Primary Actions */}
+                <div className="space-y-0.5">
+                  {/* Install / App Status CTA */}
+                  <button
+                    onClick={() => {
+                      setHeaderMenuOpen(false);
+                      handleInstallClick();
+                    }}
+                    className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-left hover:bg-emerald-500/15 text-slate-200 hover:text-white transition-colors group cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 group-hover:scale-105 transition-transform">
+                        <Download className="w-3.5 h-3.5" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-white">
+                          {!hasDownloadedApp && !isStandalone ? 'Install DEEDS CHAT' : 'DEEDS CHAT App'}
+                        </p>
+                        <p className="text-[10px] text-slate-400">Windows PC (.exe) & Android</p>
+                      </div>
+                    </div>
+                    {hasDownloadedApp || isStandalone ? (
+                      <span className="flex items-center gap-1 text-[10px] font-semibold text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        Active
+                      </span>
+                    ) : (
+                      <span className="text-[10px] font-bold text-slate-950 bg-emerald-400 px-2 py-0.5 rounded-full shadow-sm">
+                        Install
+                      </span>
+                    )}
+                  </button>
+
+                  {/* Showcase Launcher */}
+                  <button
+                    onClick={() => {
+                      sounds.playTap();
+                      setHeaderMenuOpen(false);
+                      setAuthModalState({ isOpen: true, mode: 'welcome' });
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left hover:bg-emerald-500/15 text-slate-200 hover:text-white transition-colors group cursor-pointer"
+                  >
+                    <div className="w-7 h-7 rounded-lg bg-emerald-950/70 border border-emerald-500/30 flex items-center justify-center text-emerald-300 group-hover:scale-105 transition-transform">
+                      <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-white">Showcase & Onboarding</p>
+                      <p className="text-[10px] text-slate-400">Welcome, verification & feature tour</p>
+                    </div>
+                  </button>
+
+                  {/* Supabase Database Settings */}
+                  <button
+                    onClick={() => {
+                      sounds.playTap();
+                      setHeaderMenuOpen(false);
+                      setSettingsOpen(true);
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left hover:bg-emerald-500/15 text-slate-200 hover:text-white transition-colors group cursor-pointer"
+                  >
+                    <div className="w-7 h-7 rounded-lg bg-emerald-950/70 border border-emerald-500/30 flex items-center justify-center text-emerald-300 group-hover:scale-105 transition-transform">
+                      <Database className="w-3.5 h-3.5 text-emerald-400" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-white">Database & Cloud Sync</p>
+                      <p className="text-[10px] text-slate-400">Supabase connection & live status</p>
+                    </div>
+                  </button>
+
+                  {/* Fullscreen Toggle */}
+                  <button
+                    onClick={() => {
+                      sounds.playTap();
+                      setHeaderMenuOpen(false);
+                      toggleFullscreen();
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left hover:bg-emerald-500/15 text-slate-200 hover:text-white transition-colors group cursor-pointer"
+                  >
+                    <div className="w-7 h-7 rounded-lg bg-slate-900 border border-emerald-500/20 flex items-center justify-center text-slate-300 group-hover:scale-105 transition-transform">
+                      {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-white">{isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}</p>
+                      <p className="text-[10px] text-slate-400">Toggle borderless display mode</p>
+                    </div>
+                  </button>
+                </div>
+
+                <div className="h-px bg-emerald-500/20" />
+
+                {/* Security Badge in Dropdown */}
+                <div className="px-3 py-1.5 rounded-xl bg-emerald-950/40 border border-emerald-500/20 flex items-center justify-between text-[11px] text-emerald-300 font-mono">
+                  <div className="flex items-center gap-1.5">
+                    <Lock className="w-3 h-3 text-emerald-400" />
+                    <span>Encrypted Client v2.4</span>
+                  </div>
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+                </div>
+              </div>
+            </>
           )}
-
-          {/* Quick Showcase launcher */}
-          <button
-            onClick={() => {
-              sounds.playTap();
-              setAuthModalState({ isOpen: true, mode: 'welcome' });
-            }}
-            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-900 border border-emerald-500/20 text-emerald-300 hover:text-emerald-200 text-xs transition-colors"
-            title="View Welcome & Verification screens"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Showcase</span>
-          </button>
-
-          {/* Supabase Status Pill */}
-          <button
-            onClick={() => {
-              sounds.playTap();
-              setSettingsOpen(true);
-            }}
-            className="p-1.5 rounded-full text-slate-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors"
-            title="Supabase Database Settings"
-          >
-            <Database className="w-4 h-4" />
-          </button>
         </div>
       </header>
 

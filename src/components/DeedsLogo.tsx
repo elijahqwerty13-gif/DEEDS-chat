@@ -4,6 +4,7 @@ interface DeedsLogoProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
   showText?: boolean;
   showTagline?: boolean;
+  layout?: 'vertical' | 'horizontal';
   className?: string;
 }
 
@@ -11,6 +12,7 @@ export const DeedsLogo: React.FC<DeedsLogoProps> = ({
   size = 'md',
   showText = true,
   showTagline = false,
+  layout = 'vertical',
   className = '',
 }) => {
   const iconSizes = {
@@ -27,8 +29,14 @@ export const DeedsLogo: React.FC<DeedsLogoProps> = ({
     xl: 'text-3xl',
   };
 
+  const isHorizontal = layout === 'horizontal';
+
   return (
-    <div className={`flex flex-col items-center justify-center ${className}`}>
+    <div
+      className={`flex ${
+        isHorizontal ? 'flex-row items-center gap-2.5' : 'flex-col items-center justify-center'
+      } ${className}`}
+    >
       {/* Glowing Leaf Circle Container */}
       <div
         className={`relative ${iconSizes[size]} rounded-full flex items-center justify-center p-[2px] transition-transform duration-300 hover:scale-105`}
@@ -80,9 +88,9 @@ export const DeedsLogo: React.FC<DeedsLogoProps> = ({
       </div>
 
       {showText && (
-        <div className="mt-2 text-center select-none">
-          <span className={`font-extrabold tracking-tight ${textSizes[size]}`}>
-            <span className="text-white">DEEDS </span>
+        <div className={`${isHorizontal ? 'text-left' : 'mt-2 text-center'} select-none`}>
+          <span className={`font-extrabold tracking-tight inline-flex items-center gap-1 ${textSizes[size]}`}>
+            <span className="text-white">DEEDS</span>
             <span className="text-emerald-400 drop-shadow-[0_0_10px_rgba(16,185,129,0.6)]">CHAT</span>
           </span>
           {showTagline && (
