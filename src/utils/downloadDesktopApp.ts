@@ -2,140 +2,98 @@
 
 export function getAppUrl(): string {
   if (typeof window !== 'undefined') {
-    return window.location.href.split('#')[0];
+    const origin = window.location.origin;
+    const path = window.location.pathname;
+    const base = `${origin}${path}`.replace(/\/+$/, '');
+    return `${base}?app=true&standalone=true`;
   }
-  return 'https://ais-pre-mixt7zivclg5wbafshxqyr-224292306975.europe-west2.run.app';
+  return 'https://ais-dev-mixt7zivclg5wbafshxqyr-224292306975.europe-west2.run.app?app=true&standalone=true';
+}
+
+export function getFullDownloadUrl(relativeFile: string): string {
+  if (typeof window !== 'undefined') {
+    const cleanPath = relativeFile.startsWith('/') ? relativeFile : `/${relativeFile}`;
+    return `${window.location.origin}${cleanPath}`;
+  }
+  return `https://ais-dev-mixt7zivclg5wbafshxqyr-224292306975.europe-west2.run.app${relativeFile}`;
 }
 
 // 0. Download Windows .exe Native Standalone Executable
 export function downloadWindowsExecutable() {
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem('deeds_app_downloaded', 'true');
+    } catch {
+      // safe ignore
+    }
+  }
+
+  const fullUrl = getFullDownloadUrl('/downloads/DeedsChat.exe');
+  
+  // Use target="_blank" so sandboxed preview iframes don't block the download
   const a = document.createElement('a');
-  a.href = '/downloads/DeedsChat.exe';
+  a.href = fullUrl;
   a.download = 'DeedsChat.exe';
+  a.target = '_blank';
+  a.rel = 'noopener noreferrer';
   document.body.appendChild(a);
   a.click();
-  document.body.removeChild(a);
+  setTimeout(() => {
+    if (document.body.contains(a)) {
+      document.body.removeChild(a);
+    }
+  }, 1000);
 }
 
-// 1. Download Windows .bat Native App Setup Script with robust browser detection
+// 1. Download Windows .bat Native App Setup Script
 export function downloadWindowsAppInstaller() {
-  const url = getAppUrl();
-  const scriptContent = `@echo off
-setlocal EnableDelayedExpansion
-title Installing Deeds Chat Desktop App...
-color 0A
-cls
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem('deeds_app_downloaded', 'true');
+    } catch {
+      // safe ignore
+    }
+  }
 
-echo ==============================================================================
-echo                      DEEDS CHAT DESKTOP APP INSTALLER
-echo ==============================================================================
-echo.
-echo Installing DEEDS CHAT to your Windows Desktop as a standalone application...
-echo.
-
-set "APP_URL=${url}"
-set "DESKTOP_DIR=%USERPROFILE%\\Desktop"
-
-:: Search for available Chromium browsers to run in standalone borderless app mode
-set "APP_EXE="
-
-:: 1. Check Microsoft Edge installations
-if exist "%ProgramFiles(x86)%\\Microsoft\\Edge\\Application\\msedge.exe" (
-    set "APP_EXE=%ProgramFiles(x86)%\\Microsoft\\Edge\\Application\\msedge.exe"
-) else if exist "%ProgramFiles%\\Microsoft\\Edge\\Application\\msedge.exe" (
-    set "APP_EXE=%ProgramFiles%\\Microsoft\\Edge\\Application\\msedge.exe"
-) else if exist "%LocalAppData%\\Microsoft\\Edge\\Application\\msedge.exe" (
-    set "APP_EXE=%LocalAppData%\\Microsoft\\Edge\\Application\\msedge.exe"
-)
-
-:: 2. Check Google Chrome installations
-if not defined APP_EXE (
-    if exist "%ProgramFiles%\\Google\\Chrome\\Application\\chrome.exe" (
-        set "APP_EXE=%ProgramFiles%\\Google\\Chrome\\Application\\chrome.exe"
-    ) else if exist "%ProgramFiles(x86)%\\Google\\Chrome\\Application\\chrome.exe" (
-        set "APP_EXE=%ProgramFiles(x86)%\\Google\\Chrome\\Application\\chrome.exe"
-    ) else if exist "%LocalAppData%\\Google\\Chrome\\Application\\chrome.exe" (
-        set "APP_EXE=%LocalAppData%\\Google\\Chrome\\Application\\chrome.exe"
-    )
-)
-
-:: 3. Check Brave Browser installations
-if not defined APP_EXE (
-    if exist "%ProgramFiles%\\BraveSoftware\\Brave-Browser\\Application\\brave.exe" (
-        set "APP_EXE=%ProgramFiles%\\BraveSoftware\\Brave-Browser\\Application\\brave.exe"
-    ) else if exist "%LocalAppData%\\BraveSoftware\\Brave-Browser\\Application\\brave.exe" (
-        set "APP_EXE=%LocalAppData%\\BraveSoftware\\Brave-Browser\\Application\\brave.exe"
-    )
-)
-
-:: Create Desktop shortcut
-if defined APP_EXE (
-    echo [+] Detected native app engine:
-    echo     "!APP_EXE!"
-    echo.
-    :: Create Windows .lnk shortcut configured for borderless app window
-    powershell -NoProfile -ExecutionPolicy Bypass -Command "$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('%DESKTOP_DIR%\\DEEDS CHAT.lnk'); $s.TargetPath = '!APP_EXE!'; $s.Arguments = '--app=\"%APP_URL%\"'; $s.Description = 'DEEDS CHAT — Advanced Messaging'; $s.Save()" 2>nul
-    echo [+] Native app shortcut created: "%DESKTOP_DIR%\\DEEDS CHAT.lnk"
-)
-
-:: Also create standard internet shortcut as universal fallback
-(
-echo [InternetShortcut]
-echo URL=%APP_URL%
-echo IconIndex=0
-echo IconFile=%SystemRoot%\\system32\\shell32.dll
-) > "%DESKTOP_DIR%\\DEEDS CHAT.url"
-echo [+] Web shortcut created: "%DESKTOP_DIR%\\DEEDS CHAT.url"
-echo.
-
-:: Launch the application without triggering 'Windows cannot find msedge'
-if defined APP_EXE (
-    echo [+] Launching DEEDS CHAT in borderless standalone desktop window...
-    start "" "!APP_EXE!" --app="%APP_URL%"
-) else (
-    echo [+] Launching DEEDS CHAT in default browser...
-    start "" "%APP_URL%"
-)
-
-echo.
-echo ==============================================================================
-echo  DEEDS CHAT is now installed and running on your Windows PC!
-echo ==============================================================================
-echo You can open DEEDS CHAT anytime directly from your Desktop icon.
-echo.
-timeout /t 4 >nul
-exit
-`;
-
-  const blob = new Blob([scriptContent], { type: 'application/x-bat' });
-  const downloadUrl = URL.createObjectURL(blob);
+  // First try direct static file download (with target="_blank" for iframe safety)
+  const fullUrl = getFullDownloadUrl('/downloads/DeedsChat-Windows-Setup.bat');
   const a = document.createElement('a');
-  a.href = downloadUrl;
+  a.href = fullUrl;
   a.download = 'DeedsChat-Windows-Setup.bat';
+  a.target = '_blank';
+  a.rel = 'noopener noreferrer';
   document.body.appendChild(a);
   a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(downloadUrl);
+  setTimeout(() => {
+    if (document.body.contains(a)) {
+      document.body.removeChild(a);
+    }
+  }, 1000);
 }
 
 // 2. Download Windows .url Desktop Shortcut directly
 export function downloadWindowsShortcut() {
-  const url = getAppUrl();
-  const content = `[InternetShortcut]
-URL=${url}
-IconIndex=0
-IconFile=shell32.dll,13
-`;
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem('deeds_app_downloaded', 'true');
+    } catch {
+      // safe ignore
+    }
+  }
 
-  const blob = new Blob([content], { type: 'application/internet-shortcut' });
-  const downloadUrl = URL.createObjectURL(blob);
+  const fullUrl = getFullDownloadUrl('/downloads/DEEDS-CHAT.url');
   const a = document.createElement('a');
-  a.href = downloadUrl;
-  a.download = 'DEEDS CHAT.url';
+  a.href = fullUrl;
+  a.download = 'DEEDS-CHAT.url';
+  a.target = '_blank';
+  a.rel = 'noopener noreferrer';
   document.body.appendChild(a);
   a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(downloadUrl);
+  setTimeout(() => {
+    if (document.body.contains(a)) {
+      document.body.removeChild(a);
+    }
+  }, 1000);
 }
 
 // 3. Download macOS .command Launcher Script
@@ -163,8 +121,15 @@ fi
   const a = document.createElement('a');
   a.href = downloadUrl;
   a.download = 'DeedsChat-Mac-Launcher.command';
+  a.target = '_blank';
+  a.rel = 'noopener noreferrer';
   document.body.appendChild(a);
   a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(downloadUrl);
+  setTimeout(() => {
+    if (document.body.contains(a)) {
+      document.body.removeChild(a);
+    }
+    // CRITICAL: Do NOT revoke immediately - allow browser time to read blob
+    URL.revokeObjectURL(downloadUrl);
+  }, 60000);
 }

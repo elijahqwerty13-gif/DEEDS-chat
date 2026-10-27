@@ -430,6 +430,8 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
                     <a
                       href={msg.attachmentUrl}
                       download={msg.attachmentName}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="flex items-center gap-3 p-2 rounded-xl bg-black/20 hover:bg-black/30 transition-colors"
                     >
                       <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400">

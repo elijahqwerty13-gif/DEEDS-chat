@@ -77,12 +77,32 @@ export default function App() {
   const [installModalOpen, setInstallModalOpen] = useState(false);
   const [hasDownloadedApp, setHasDownloadedApp] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
-    return (
-      localStorage.getItem('deeds_app_downloaded') === 'true' ||
+    const urlParams = new URLSearchParams(window.location.search);
+    const isStandaloneQuery =
+      urlParams.get('app') === 'true' ||
+      urlParams.get('standalone') === 'true' ||
+      urlParams.get('mode') === 'desktop' ||
+      window.location.search.includes('standalone=true') ||
+      window.location.search.includes('app=true');
+    const isStandaloneDisplay =
       window.matchMedia('(display-mode: standalone)').matches ||
-      window.location.search.includes('mode=desktop') ||
-      window.location.search.includes('app=true')
-    );
+      window.matchMedia('(display-mode: window-controls-overlay)').matches ||
+      (window.navigator as unknown as { standalone?: boolean }).standalone === true ||
+      document.referrer.includes('android-app://');
+
+    const active =
+      localStorage.getItem('deeds_app_downloaded') === 'true' ||
+      isStandaloneQuery ||
+      isStandaloneDisplay;
+
+    if (active) {
+      try {
+        localStorage.setItem('deeds_app_downloaded', 'true');
+      } catch {
+        // safe ignore
+      }
+    }
+    return active;
   });
 
   // Header 3-dot options menu

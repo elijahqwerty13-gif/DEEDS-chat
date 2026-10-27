@@ -4,11 +4,29 @@ import path from 'path';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
+function downloadHeadersPlugin() {
+  return {
+    name: 'download-headers-plugin',
+    configureServer(server: any) {
+      server.middlewares.use((req: any, res: any, next: any) => {
+        if (req.url && req.url.startsWith('/downloads/')) {
+          const filename = path.basename(req.url.split('?')[0]);
+          res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+          res.setHeader('Content-Type', 'application/octet-stream');
+          res.setHeader('Access-Control-Allow-Origin', '*');
+        }
+        next();
+      });
+    },
+  };
+}
+
 export default defineConfig(() => {
   return {
     plugins: [
       react(),
       tailwindcss(),
+      downloadHeadersPlugin(),
       VitePWA({
         registerType: 'autoUpdate',
         injectRegister: 'auto',
